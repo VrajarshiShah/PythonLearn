@@ -1,0 +1,20 @@
+{
+  "user_data": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "username": "johndoe@example.com",
+    "password": "Test@1234",
+    "confirm_password": "Test@1234",
+    "phoneNumber": "1234567890",
+    "dev_address": "123 Main Street",
+    "dev_country": "India",
+    "dev_city": "New York",
+    "dev_state": "NY",
+    "dev_zip": "10001"
+  },
+  "payment_data": {
+    "credit_card_number": "4111111111111111",
+    "credit_card_expiration_date": "12/2026",
+    "credit_security_code": "900"
+  }
+}
