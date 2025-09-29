@@ -1,7 +1,12 @@
-a=int(input("A :"))
-b=int(input("B :"))
-print("Average :",(a+b)/2)
-
-
-c=int(input("Value for square :"))
-print("Square = ",c**2)
+#
+a=2
+b=5
+sum=a+b
+div=a/b
+print(sum)
+print(div)
+#
+a=8
+c=23
+sum=(a+c)
+print(sum)
