@@ -1,0 +1,148 @@
+[
+  {
+    "Test Case ID": "TC_ACCOUNTS_001",
+    "Test Description": "Check basic SELECT query for accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.account_number], [accounts.practice_id], [accounts.account_type] FROM [accounts]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from accounts",
+    "Fields Used": [
+      "account_number",
+      "practice_id",
+      "account_type"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_002",
+    "Test Description": "Check WHERE clause with condition for accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.account_type] FROM [accounts] WHERE [accounts.account_type] > 0",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where account_type meets the condition",
+    "Fields Used": [
+      "account_type"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_003",
+    "Test Description": "Check AVG aggregate function for accounts API",
+    "Request Body": {
+      "pql": "SELECT AVG([accounts.account_fullname]) FROM [accounts]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return AVG of account_fullname",
+    "Fields Used": [
+      "account_fullname"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_004",
+    "Test Description": "Check MAX aggregate function for accounts API",
+    "Request Body": {
+      "pql": "SELECT MAX([accounts.account_fullname]) FROM [accounts]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MAX of account_fullname",
+    "Fields Used": [
+      "account_fullname"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_005",
+    "Test Description": "Check LIKE operator for accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.description] FROM [accounts] WHERE [accounts.description] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where description contains 'example'",
+    "Fields Used": [
+      "description"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_006",
+    "Test Description": "Check IN operator for accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.account_number] FROM [accounts] WHERE [accounts.account_number] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where account_number is in specified values",
+    "Fields Used": [
+      "account_number"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_007",
+    "Test Description": "Check BETWEEN operator for numeric field in accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.account_fullname] FROM [accounts] WHERE [accounts.account_fullname] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where account_fullname is between 100 and 1000",
+    "Fields Used": [
+      "account_fullname"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_008",
+    "Test Description": "Check ORDER BY for accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.account_number], [accounts.account_name] FROM [accounts] ORDER BY [accounts.balance_total] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by balance_total in ascending order",
+    "Fields Used": [
+      "account_number",
+      "account_name",
+      "balance_total"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_009",
+    "Test Description": "Check DISTINCT for accounts API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [accounts.practice_id] FROM [accounts]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of practice_id",
+    "Fields Used": [
+      "practice_id"
+    ]
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_010",
+    "Test Description": "Check all fields can be selected from accounts",
+    "Request Body": {
+      "pql": "SELECT * FROM [accounts]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 7 fields from accounts table",
+    "Fields Used": "ALL_FIELDS"
+  },
+  {
+    "Test Case ID": "TC_ACCOUNTS_011",
+    "Test Description": "Check complex WHERE conditions for accounts API",
+    "Request Body": {
+      "pql": "SELECT [accounts.practice_id], [accounts.account_number] FROM [accounts] WHERE [accounts.practice_id] IS NOT NULL AND [accounts.account_number] > 0",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on practice_id and account_number",
+    "Fields Used": [
+      "practice_id",
+      "account_number"
+    ]
+  }
+]

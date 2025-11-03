@@ -1,6 +1,5 @@
 import json
 import random
-from api_data import API_SCHEMA
 from typing import List, Dict, Any
 
 class PQLTestGenerator:
@@ -18,6 +17,8 @@ class PQLTestGenerator:
         for api_name in api_names:
             api_info = self.get_api_info(api_name)
             if api_info:
+                print(f"\n🔧 Generating test cases for API: {api_name}")
+                print(f"📊 Available fields: {len(api_info['api_fields'])} fields")
                 self.generate_api_test_cases(api_info)
         
         return self.test_cases
@@ -29,10 +30,16 @@ class PQLTestGenerator:
                 return api
         return None
     
+    def get_available_apis(self) -> List[str]:
+        """Get list of all available API names"""
+        return [api['api_name'] for api in self.api_data['items']]
+    
     def generate_api_test_cases(self, api_info: Dict[str, Any]):
         """Generate test cases for a specific API"""
         api_name = api_info['api_name']
         fields = api_info['api_fields']
+        
+        print(f"   📝 Generating {10} different test cases...")
         
         # Test Case 1: Basic SELECT query
         self.generate_basic_select_test(api_name, fields)
@@ -78,7 +85,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return {len(selected_fields)} selected fields from {api_name}"
+                "Expected Results": f"Should return {len(selected_fields)} selected fields from {api_name}",
+                "Fields Used": selected_fields
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -111,7 +119,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records where {field} meets the condition"
+                "Expected Results": f"Should return records where {field} meets the condition",
+                "Fields Used": [field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -133,7 +142,8 @@ class PQLTestGenerator:
                         "limit": "50",
                         "offset": "0"
                     },
-                    "Expected Results": f"Should return {agg_func} of {field}"
+                    "Expected Results": f"Should return {agg_func} of {field}",
+                    "Fields Used": [field]
                 }
                 self.test_cases.append(test_case)
                 self.test_counter += 1
@@ -152,7 +162,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records where {field} contains 'example'"
+                "Expected Results": f"Should return records where {field} contains 'example'",
+                "Fields Used": [field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -182,7 +193,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records where {field} is in specified values"
+                "Expected Results": f"Should return records where {field} is in specified values",
+                "Fields Used": [field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -202,7 +214,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records where {field} is between 100 and 1000"
+                "Expected Results": f"Should return records where {field} is between 100 and 1000",
+                "Fields Used": [field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -217,7 +230,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records where {field} is in 2024"
+                "Expected Results": f"Should return records where {field} is in 2024",
+                "Fields Used": [field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -234,7 +248,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records ordered by {order_field} in ascending order"
+                "Expected Results": f"Should return records ordered by {order_field} in ascending order",
+                "Fields Used": [fields[0], fields[1], order_field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -251,7 +266,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return unique values of {field}"
+                "Expected Results": f"Should return unique values of {field}",
+                "Fields Used": [field]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -266,7 +282,8 @@ class PQLTestGenerator:
                 "limit": "10",
                 "offset": "0"
             },
-            "Expected Results": f"Should return all {len(fields)} fields from {api_name} table"
+            "Expected Results": f"Should return all {len(fields)} fields from {api_name} table",
+            "Fields Used": "ALL_FIELDS"
         }
         self.test_cases.append(test_case)
         self.test_counter += 1
@@ -291,7 +308,8 @@ class PQLTestGenerator:
                     "limit": "50",
                     "offset": "0"
                 },
-                "Expected Results": f"Should return records meeting both conditions on {field1} and {field2}"
+                "Expected Results": f"Should return records meeting both conditions on {field1} and {field2}",
+                "Fields Used": [field1, field2]
             }
             self.test_cases.append(test_case)
             self.test_counter += 1
@@ -349,53 +367,98 @@ class PQLTestGenerator:
     
     def print_test_cases(self):
         """Print test cases in a readable format"""
+        print(f"\n{'='*80}")
+        print(f"🎯 GENERATED TEST CASES SUMMARY")
+        print(f"{'='*80}")
+        
         for test_case in self.test_cases:
-            print(f"Test Case ID: {test_case['Test Case ID']}")
-            print(f"Test Description: {test_case['Test Description']}")
-            print(f"Request Body: {json.dumps(test_case['Request Body'], indent=2)}")
-            print(f"Expected Results: {test_case['Expected Results']}")
-            print("-" * 80)
+            print(f"\n📋 Test Case ID: {test_case['Test Case ID']}")
+            print(f"📖 Description: {test_case['Test Description']}")
+            print(f"🔍 Fields Used: {test_case.get('Fields Used', 'N/A')}")
+            print(f"🔧 PQL Query: {test_case['Request Body']['pql']}")
+            print(f"✅ Expected: {test_case['Expected Results']}")
+            print(f"{'-'*80}")
 
-# Usage example
+def get_user_input(available_apis: List[str]):
+    """Get API name from user input"""
+    print(f"\n{'='*80}")
+    print(f"🚀 PQL TEST CASE GENERATOR")
+    print(f"{'='*80}")
+    print(f"📋 Available APIs: {len(available_apis)} APIs found")
+    
+    # Show first 10 APIs as examples
+    print(f"📝 Sample APIs: {', '.join(available_apis[:10])}")
+    if len(available_apis) > 10:
+        print(f"   ... and {len(available_apis) - 10} more")
+    
+    while True:
+        api_name = input("\n🎯 Enter API Name (or 'list' to see all APIs, 'quit' to exit): ").strip()
+        
+        if api_name.lower() == 'quit':
+            return None
+        elif api_name.lower() == 'list':
+            print(f"\n📋 ALL AVAILABLE APIS ({len(available_apis)}):")
+            for i, api in enumerate(available_apis, 1):
+                print(f"   {i:2d}. {api}")
+            continue
+        elif api_name in available_apis:
+            return api_name
+        else:
+            print(f"❌ API '{api_name}' not found. Please try again.")
+            print(f"💡 Tip: Use 'list' to see all available APIs")
+
 def main():
-    # Your provided JSON data
-    api_data = API_SCHEMA
+    # Your provided JSON data - replace this with your actual API_SCHEMA import
+    try:
+        from api_data import API_SCHEMA
+        api_data = API_SCHEMA
+    except ImportError:
+        print("❌ Error: Could not import API_SCHEMA from api_data.py")
+        print("💡 Please make sure api_data.py exists with your API schema")
+        return
     
     # Initialize generator
     generator = PQLTestGenerator(api_data)
+    available_apis = generator.get_available_apis()
     
-    # Generate test cases for specific APIs
-    target_apis = ["patients", "appointments", "claims", "transactions", "providers"]
-    test_cases = generator.generate_test_cases(target_apis)
+    if not available_apis:
+        print("❌ No APIs found in the schema. Please check your API data.")
+        return
     
-    # Print test cases
-    generator.print_test_cases()
+    print(f"✅ Loaded {len(available_apis)} APIs from schema")
     
-    # Save to file
-    generator.save_test_cases("pql_test_cases.json")
-    
-    print(f"Generated {len(test_cases)} test cases")
-
-# Alternative: Generate for all APIs
-def generate_all_test_cases():
-    api_data = {
-        "status": "Success",
-        "message": "Success",
-        "items": [
-            # ... your full JSON data here ...
-        ]
-    }
-    
-    generator = PQLTestGenerator(api_data)
-    
-    # Get all API names
-    all_apis = [api['api_name'] for api in api_data['items']]
-    
-    # Generate test cases for all APIs (you might want to limit this)
-    test_cases = generator.generate_test_cases(all_apis[:10])  # First 10 APIs
-    
-    generator.save_test_cases("all_pql_test_cases.json")
-    print(f"Generated {len(test_cases)} test cases for {len(all_apis[:10])} APIs")
+    while True:
+        # Get user input
+        api_name = get_user_input(available_apis)
+        
+        if api_name is None:
+            print("👋 Exiting PQL Test Generator. Goodbye!")
+            break
+        
+        # Generate test cases for the selected API
+        print(f"\n🎯 Generating test cases for: {api_name}")
+        
+        # Reset test cases and counter for new generation
+        generator.test_cases = []
+        generator.test_counter = 1
+        
+        test_cases = generator.generate_test_cases([api_name])
+        
+        # Print the generated test cases
+        generator.print_test_cases()
+        
+        # Save to file
+        filename = f"pql_test_cases_{api_name}.json"
+        generator.save_test_cases(filename)
+        
+        print(f"\n💾 Test cases saved to: {filename}")
+        print(f"📊 Total test cases generated: {len(test_cases)}")
+        
+        # Ask if user wants to generate for another API
+        continue_gen = input("\n🔄 Generate test cases for another API? (y/n): ").strip().lower()
+        if continue_gen not in ['y', 'yes']:
+            print("👋 Exiting PQL Test Generator. Goodbye!")
+            break
 
 if __name__ == "__main__":
     main()

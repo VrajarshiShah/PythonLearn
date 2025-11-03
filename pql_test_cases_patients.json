@@ -1,0 +1,161 @@
+[
+  {
+    "Test Case ID": "TC_PATIENTS_001",
+    "Test Description": "Check basic SELECT query for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.address_line2], [patients.recall_date], [patients.city] FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from patients",
+    "Fields Used": [
+      "address_line2",
+      "recall_date",
+      "city"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_002",
+    "Test Description": "Check WHERE clause with condition for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.guarantor_bill_type_description] FROM [patients] WHERE [patients.guarantor_bill_type_description] = 'Active'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where guarantor_bill_type_description meets the condition",
+    "Fields Used": [
+      "guarantor_bill_type_description"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_003",
+    "Test Description": "Check COUNT aggregate function for patients API",
+    "Request Body": {
+      "pql": "SELECT COUNT([patients.guarantor_secondary_group_plan_number]) FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return COUNT of guarantor_secondary_group_plan_number",
+    "Fields Used": [
+      "guarantor_secondary_group_plan_number"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_004",
+    "Test Description": "Check MAX aggregate function for patients API",
+    "Request Body": {
+      "pql": "SELECT MAX([patients.guarantor_secondary_group_plan_number]) FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MAX of guarantor_secondary_group_plan_number",
+    "Fields Used": [
+      "guarantor_secondary_group_plan_number"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_005",
+    "Test Description": "Check LIKE operator for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.billing_type] FROM [patients] WHERE [patients.billing_type] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where billing_type contains 'example'",
+    "Fields Used": [
+      "billing_type"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_006",
+    "Test Description": "Check IN operator for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.subscriber_id] FROM [patients] WHERE [patients.subscriber_id] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where subscriber_id is in specified values",
+    "Fields Used": [
+      "subscriber_id"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_007",
+    "Test Description": "Check BETWEEN operator for numeric field in patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.secondary_group_plan_number] FROM [patients] WHERE [patients.secondary_group_plan_number] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where secondary_group_plan_number is between 100 and 1000",
+    "Fields Used": [
+      "secondary_group_plan_number"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_008",
+    "Test Description": "Check BETWEEN operator for date field in patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.birthdate] FROM [patients] WHERE [patients.birthdate] BETWEEN '2024-01-01' AND '2024-12-31'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where birthdate is in 2024",
+    "Fields Used": [
+      "birthdate"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_009",
+    "Test Description": "Check ORDER BY for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.profile_status], [patients.recall_date] FROM [patients] ORDER BY [patients.primary_medical_insurance_id] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by primary_medical_insurance_id in ascending order",
+    "Fields Used": [
+      "profile_status",
+      "recall_date",
+      "primary_medical_insurance_id"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_010",
+    "Test Description": "Check DISTINCT for patients API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [patients.exclude_message] FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of exclude_message",
+    "Fields Used": [
+      "exclude_message"
+    ]
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_011",
+    "Test Description": "Check all fields can be selected from patients",
+    "Request Body": {
+      "pql": "SELECT * FROM [patients]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 105 fields from patients table",
+    "Fields Used": "ALL_FIELDS"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_012",
+    "Test Description": "Check complex WHERE conditions for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.primary_subscriber_patient_id], [patients.referred_by_patient_id] FROM [patients] WHERE [patients.primary_subscriber_patient_id] IS NOT NULL AND [patients.referred_by_patient_id] IS NOT NULL",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on primary_subscriber_patient_id and referred_by_patient_id",
+    "Fields Used": [
+      "primary_subscriber_patient_id",
+      "referred_by_patient_id"
+    ]
+  }
+]
