@@ -123,6 +123,14 @@ st.markdown("""
     .tab-content {
         padding: 1rem 0;
     }
+    .field-info {
+        background-color: #f8fafc;
+        border-left: 4px solid #667eea;
+        padding: 0.5rem 1rem;
+        margin: 0.5rem 0;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -208,7 +216,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
         "name": f"Basic SELECT - All {api_name} Fields",
         "query": f"SELECT {field_list} FROM [{api_name}]",
         "description": f"Select all {api_name} fields: {', '.join(fields)}",
-        "type": "SELECT_BASIC"
+        "type": "SELECT_BASIC",
+        "fields_used": fields
     })
     
     # 2. SELECT with specific fields (first 3 fields)
@@ -219,7 +228,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": f"SELECT {api_name} Core Fields",
             "query": f"SELECT {field_list} FROM [{api_name}]",
             "description": f"Select core {api_name} fields: {', '.join(selected_fields)}",
-            "type": "SELECT_SPECIFIC"
+            "type": "SELECT_SPECIFIC",
+            "fields_used": selected_fields
         })
     
     # 3. EXISTS operator with practice_id or similar ID field
@@ -230,7 +240,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "EXISTS Operator",
             "query": f"SELECT [{api_name}.{id_field}] FROM [{api_name}] WHERE EXISTS (SELECT 1 FROM [appointments] WHERE [appointments.practice_id] = [{api_name}.{id_field}])",
             "description": f"Check EXISTS operator using {id_field} field",
-            "type": "EXISTS"
+            "type": "EXISTS",
+            "fields_used": [id_field]
         })
     
     # 4. COUNT with EXISTS
@@ -240,7 +251,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "COUNT with EXISTS",
             "query": f"SELECT COUNT([{api_name}.{id_field}]) FROM [{api_name}] WHERE EXISTS (SELECT 1 FROM [appointments] WHERE [appointments.practice_id] = [{api_name}.{id_field}])",
             "description": f"Count records with EXISTS condition using {id_field}",
-            "type": "COUNT_EXISTS"
+            "type": "COUNT_EXISTS",
+            "fields_used": [id_field]
         })
     
     # 5. COUNT all records
@@ -249,7 +261,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": f"COUNT {api_name} Records",
             "query": f"SELECT COUNT([{api_name}.{fields[0]}]) FROM [{api_name}]",
             "description": f"Count total records in {api_name}",
-            "type": "COUNT"
+            "type": "COUNT",
+            "fields_used": [fields[0]]
         })
     
     # 6. MAX and MIN functions
@@ -260,7 +273,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "MAX and MIN Functions",
             "query": f"SELECT MAX([{api_name}.{field}]), MIN([{api_name}.{field}]) FROM [{api_name}]",
             "description": f"Get maximum and minimum values of {field}",
-            "type": "MAX_MIN"
+            "type": "MAX_MIN",
+            "fields_used": [field]
         })
     
     # 7. AVG function
@@ -270,7 +284,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "AVG Function",
             "query": f"SELECT AVG([{api_name}.{field}]) FROM [{api_name}]",
             "description": f"Calculate average of {field}",
-            "type": "AVG"
+            "type": "AVG",
+            "fields_used": [field]
         })
     
     # 8. LIKE operator
@@ -281,7 +296,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "LIKE Operator",
             "query": f"SELECT [{api_name}.{field}] FROM [{api_name}] WHERE [{api_name}.{field}] LIKE '%example%'",
             "description": f"Search using LIKE operator on {field}",
-            "type": "LIKE"
+            "type": "LIKE",
+            "fields_used": [field]
         })
     
     # 9. IN operator
@@ -291,7 +307,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "IN Operator",
             "query": f"SELECT [{api_name}.{field}] FROM [{api_name}] WHERE [{api_name}.{field}] IN (1, 2, 3)",
             "description": f"Filter using IN operator on {field}",
-            "type": "IN"
+            "type": "IN",
+            "fields_used": [field]
         })
     
     # 10. BETWEEN operator
@@ -301,7 +318,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "BETWEEN Operator",
             "query": f"SELECT [{api_name}.{field}] FROM [{api_name}] WHERE [{api_name}.{field}] BETWEEN 1 AND 100",
             "description": f"Filter using BETWEEN operator on {field}",
-            "type": "BETWEEN"
+            "type": "BETWEEN",
+            "fields_used": [field]
         })
     
     # 11. ORDER BY
@@ -313,7 +331,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "ORDER BY",
             "query": f"SELECT {field_list} FROM [{api_name}] ORDER BY [{api_name}.{order_field}] ASC",
             "description": f"Order results by {order_field}",
-            "type": "ORDER_BY"
+            "type": "ORDER_BY",
+            "fields_used": display_fields
         })
     
     # 12. DISTINCT
@@ -323,7 +342,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "DISTINCT Values",
             "query": f"SELECT DISTINCT [{api_name}.{field}] FROM [{api_name}]",
             "description": f"Get distinct values of {field}",
-            "type": "DISTINCT"
+            "type": "DISTINCT",
+            "fields_used": [field]
         })
     
     # 13. HAVING clause
@@ -333,7 +353,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "HAVING Clause",
             "query": f"SELECT SUM([{api_name}.{field1}]) FROM [{api_name}] HAVING COUNT([{api_name}.{field2}]) < 100",
             "description": f"Use HAVING clause with SUM({field1}) and COUNT({field2})",
-            "type": "HAVING"
+            "type": "HAVING",
+            "fields_used": [field1, field2]
         })
     
     # 14. Complex WHERE with multiple conditions
@@ -344,7 +365,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "name": "Complex WHERE Conditions",
             "query": f"SELECT [{api_name}.{field1}], [{api_name}.{field2}] FROM [{api_name}] WHERE [{api_name}.{field1}] IS NOT NULL AND [{api_name}.{field2}] IS NOT NULL",
             "description": f"Multiple conditions on {field1} and {field2}",
-            "type": "COMPLEX_WHERE"
+            "type": "COMPLEX_WHERE",
+            "fields_used": [field1, field2]
         })
     
     # 15. All fields selection (wildcard)
@@ -352,7 +374,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
         "name": f"All {api_name} Fields (Wildcard)",
         "query": f"SELECT * FROM [{api_name}]",
         "description": f"Select all {api_name} fields using wildcard",
-        "type": "SELECT_ALL"
+        "type": "SELECT_ALL",
+        "fields_used": fields
     })
     
     # 16. JOIN queries with related tables
@@ -373,7 +396,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
                             "name": f"LEFT JOIN with {join_table}",
                             "query": f"SELECT [{api_name}.{fields[0]}], [{join_table}.{join_fields[0]}] FROM [{api_name}] LEFT JOIN [{join_table}] ON [{api_name}.{join_field}] = [{join_table}.{join_match_field}]",
                             "description": f"LEFT JOIN with {join_table} using {join_field}",
-                            "type": "LEFT_JOIN"
+                            "type": "LEFT_JOIN",
+                            "fields_used": [fields[0], join_field]
                         })
                         break
     
@@ -502,6 +526,91 @@ def display_request_response(result: Dict[str, Any], query_info: Dict[str, Any])
                 for key, value in pagination.items():
                     st.write(f"**{key.replace('_', ' ').title()}:** `{value}`")
 
+def show_query_execution_modal(query_info: Dict[str, Any], tester: PQLTester, query_limit: int):
+    """Show modal for editing request body before execution"""
+    
+    # Initialize session state for request editing
+    if f"request_body_{query_info['name']}" not in st.session_state:
+        st.session_state[f"request_body_{query_info['name']}"] = {
+            "pql": query_info["query"],
+            "limit": query_limit,
+            "offset": 0
+        }
+    
+    request_body = st.session_state[f"request_body_{query_info['name']}"]
+    
+    st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-header">⚡ Execute: {query_info["name"]}</div>', unsafe_allow_html=True)
+    
+    # Show fields used in this query
+    if "fields_used" in query_info:
+        st.markdown('<div class="field-info">', unsafe_allow_html=True)
+        st.markdown(f"**Fields used in this query:** `{', '.join(query_info['fields_used'])}`")
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Display the original query
+    st.markdown("**PQL Query:**")
+    st.code(query_info["query"], language="sql")
+    
+    st.markdown("**Description:**")
+    st.write(query_info["description"])
+    
+    # Editable request parameters
+    st.markdown("---")
+    st.markdown('<div class="subsection-header">🔧 Request Configuration</div>', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        updated_pql = st.text_area(
+            "PQL Query",
+            value=request_body["pql"],
+            height=100,
+            help="Modify the PQL query if needed"
+        )
+    
+    with col2:
+        updated_limit = st.number_input(
+            "Limit",
+            min_value=1,
+            max_value=1000,
+            value=request_body["limit"],
+            help="Number of records to return"
+        )
+        
+        updated_offset = st.number_input(
+            "Offset",
+            min_value=0,
+            value=request_body["offset"],
+            help="Number of records to skip"
+        )
+    
+    # Update request body
+    updated_request_body = {
+        "pql": updated_pql,
+        "limit": updated_limit,
+        "offset": updated_offset
+    }
+    
+    st.session_state[f"request_body_{query_info['name']}"] = updated_request_body
+    
+    # Execute button
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("🚀 Execute Query", use_container_width=True, type="primary"):
+            with st.spinner("Executing query..."):
+                result = tester.execute_query(
+                    updated_request_body["pql"], 
+                    updated_request_body["limit"], 
+                    updated_request_body["offset"]
+                )
+                st.session_state[f"result_{query_info['name']}"] = result
+                st.session_state[f"current_query_info"] = query_info
+                st.session_state["show_execution_results"] = True
+                st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
 def main():
     tester = PQLTester()
     
@@ -538,6 +647,9 @@ def main():
         if st.button("🎯 Generate API-Specific Test Queries", use_container_width=True):
             st.session_state.test_queries = generate_api_specific_queries(selected_api)
             st.session_state.selected_api = selected_api
+            # Clear previous results when generating new queries
+            if "show_execution_results" in st.session_state:
+                del st.session_state["show_execution_results"]
         
         st.markdown('</div>', unsafe_allow_html=True)
         
@@ -563,14 +675,19 @@ def main():
                     for i, query_info in enumerate(queries):
                         st.write(f"**{query_info['name']}**")
                         st.write(f"*{query_info['description']}*")
+                        
+                        # Show fields used in this specific query
+                        if "fields_used" in query_info:
+                            st.markdown(f"<div class='field-info'>Fields: `{', '.join(query_info['fields_used'])}`</div>", 
+                                      unsafe_allow_html=True)
+                        
                         st.code(query_info['query'], language="sql")
                         
                         if st.button(f"🚀 Execute", key=f"exec_{query_type}_{i}", use_container_width=True):
-                            with st.spinner("Executing query..."):
-                                result = tester.execute_query(query_info['query'], query_limit)
-                                st.session_state[f"result_{query_type}_{i}"] = result
-                                st.session_state[f"current_query_{query_type}_{i}"] = query_info
-                                st.session_state[f"current_query_key"] = f"{query_type}_{i}"
+                            st.session_state[f"current_query_{query_type}_{i}"] = query_info
+                            st.session_state["current_query_key"] = f"{query_type}_{i}"
+                            st.session_state["show_execution_modal"] = f"{query_type}_{i}"
+                            st.rerun()
             
             st.markdown('</div>', unsafe_allow_html=True)
     
@@ -578,47 +695,50 @@ def main():
         st.markdown('<div class="card">', unsafe_allow_html=True)
         st.markdown('<div class="section-header">📊 Query Results</div>', unsafe_allow_html=True)
         
-        if 'test_queries' in st.session_state:
-            current_key = st.session_state.get("current_query_key", None)
-            if current_key is not None:
-                query_info = st.session_state.get(f"current_query_{current_key}")
-                result = st.session_state.get(f"result_{current_key}")
+        # Show execution modal if a query is selected
+        if "show_execution_modal" in st.session_state:
+            current_key = st.session_state["show_execution_modal"]
+            query_info = st.session_state.get(f"current_query_{current_key}")
+            
+            if query_info:
+                show_query_execution_modal(query_info, tester, query_limit)
+        
+        # Show execution results
+        if "show_execution_results" in st.session_state and st.session_state.show_execution_results:
+            query_info = st.session_state.get("current_query_info")
+            result = st.session_state.get(f"result_{query_info['name']}")
+            
+            if query_info and result:
+                st.markdown(f"### {query_info['name']}")
+                st.markdown(f"**Query Type:** `{query_info['type']}`")
+                st.markdown(f"**Description:** {query_info['description']}")
                 
-                if query_info and result:
-                    st.markdown(f"### {query_info['name']}")
-                    st.markdown(f"**Query Type:** `{query_info['type']}`")
-                    st.markdown(f"**Description:** {query_info['description']}")
-                    
-                    st.markdown("**PQL Query:**")
-                    st.code(query_info['query'], language="sql")
-                    
-                    display_request_response(result, query_info)
-            
-            st.markdown("---")
-            st.markdown('<div class="subsection-header">📋 Execution History</div>', unsafe_allow_html=True)
-            
-            executed_queries = []
-            for key in st.session_state.keys():
-                if key.startswith("result_"):
-                    parts = key.split("_", 1)
-                    if len(parts) > 1:
-                        query_key = parts[1]
-                        result = st.session_state[key]
-                        query_info = st.session_state.get(f"current_query_{query_key}")
-                        if query_info:
-                            executed_queries.append((query_key, query_info, result))
-            
-            for query_key, query_info, result in executed_queries:
-                status_icon = "✅" if result.get("success") else "❌"
+                # Show fields used
+                if "fields_used" in query_info:
+                    st.markdown(f"**Fields Used:** `{', '.join(query_info['fields_used'])}`")
                 
-                if st.button(
-                    f"{status_icon} {query_info['name']} ({query_info['type']})",
-                    key=f"history_{query_key}",
-                    use_container_width=True
-                ):
-                    st.session_state[f"current_query_{query_key}"] = query_info
-                    st.session_state["current_query_key"] = query_key
+                st.markdown("**PQL Query:**")
+                st.code(query_info['query'], language="sql")
+                
+                display_request_response(result, query_info)
+                
+                # Button to go back to query list
+                if st.button("← Back to Query List", use_container_width=True):
+                    st.session_state["show_execution_results"] = False
+                    if "show_execution_modal" in st.session_state:
+                        del st.session_state["show_execution_modal"]
                     st.rerun()
+        
+        elif 'test_queries' in st.session_state:
+            st.markdown('<div class="info-box">', unsafe_allow_html=True)
+            st.info("👆 Select a query and configure the request body to execute it")
+            st.markdown("""
+            **New Features:**
+            - ✅ **API Field Visibility**: See exactly which fields are used in each query
+            - ✅ **Request Body Editing**: Modify PQL, limit, and offset before execution
+            - ✅ **Real-time Configuration**: Customize your API calls
+            """)
+            st.markdown('</div>', unsafe_allow_html=True)
         
         else:
             st.markdown('<div class="info-box">', unsafe_allow_html=True)
