@@ -1,0 +1,602 @@
+[
+  {
+    "Test Case ID": "TC_PATIENTS_001",
+    "Test Description": "Check basic SELECT query for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.guarantor_bill_type], [patients.preferred_name], [patients.missed] FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from patients"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_002",
+    "Test Description": "Check WHERE clause with condition for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.guarantor_id] FROM [patients] WHERE [patients.guarantor_id] IS NOT NULL",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where guarantor_id meets the condition"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_003",
+    "Test Description": "Check COUNT aggregate function for patients API",
+    "Request Body": {
+      "pql": "SELECT COUNT([patients.guarantor_primary_group_plan_number]) FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return COUNT of guarantor_primary_group_plan_number"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_004",
+    "Test Description": "Check MIN aggregate function for patients API",
+    "Request Body": {
+      "pql": "SELECT MIN([patients.guarantor_primary_group_plan_number]) FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MIN of guarantor_primary_group_plan_number"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_005",
+    "Test Description": "Check LIKE operator for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.billing_type] FROM [patients] WHERE [patients.billing_type] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where billing_type contains 'example'"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_006",
+    "Test Description": "Check IN operator for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.primary_medical_subscriber_id] FROM [patients] WHERE [patients.primary_medical_subscriber_id] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where primary_medical_subscriber_id is in specified values"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_007",
+    "Test Description": "Check BETWEEN operator for numeric field in patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.secondary_group_plan_number] FROM [patients] WHERE [patients.secondary_group_plan_number] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where secondary_group_plan_number is between 100 and 1000"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_008",
+    "Test Description": "Check BETWEEN operator for date field in patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.treatment_estimate_completion_date] FROM [patients] WHERE [patients.treatment_estimate_completion_date] BETWEEN '2024-01-01' AND '2024-12-31'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where treatment_estimate_completion_date is in 2024"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_009",
+    "Test Description": "Check ORDER BY for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.profile_status], [patients.recall_date] FROM [patients] ORDER BY [patients.secondary_insurance_company_id] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by secondary_insurance_company_id in ascending order"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_010",
+    "Test Description": "Check DISTINCT for patients API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [patients.preferred_recall_method] FROM [patients]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of preferred_recall_method"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_011",
+    "Test Description": "Check all fields can be selected from patients",
+    "Request Body": {
+      "pql": "SELECT * FROM [patients]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 105 fields from patients table"
+  },
+  {
+    "Test Case ID": "TC_PATIENTS_012",
+    "Test Description": "Check complex WHERE conditions for patients API",
+    "Request Body": {
+      "pql": "SELECT [patients.integration_ids], [patients.bill_type] FROM [patients] WHERE [patients.integration_ids] IS NOT NULL AND [patients.bill_type] = 'Active'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on integration_ids and bill_type"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_013",
+    "Test Description": "Check basic SELECT query for appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.hygienist], [appointments.arrival_status], [appointments.visit_reasons] FROM [appointments]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from appointments"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_014",
+    "Test Description": "Check WHERE clause with condition for appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.last_changed_date] FROM [appointments] WHERE [appointments.last_changed_date] > '2024-01-01'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where last_changed_date meets the condition"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_015",
+    "Test Description": "Check SUM aggregate function for appointments API",
+    "Request Body": {
+      "pql": "SELECT SUM([appointments.procedure_code2_amount]) FROM [appointments]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return SUM of procedure_code2_amount"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_016",
+    "Test Description": "Check MAX aggregate function for appointments API",
+    "Request Body": {
+      "pql": "SELECT MAX([appointments.procedure_code2_amount]) FROM [appointments]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MAX of procedure_code2_amount"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_017",
+    "Test Description": "Check LIKE operator for appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.multiple_statuses] FROM [appointments] WHERE [appointments.multiple_statuses] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where multiple_statuses contains 'example'"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_018",
+    "Test Description": "Check IN operator for appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.procedure_code7_time] FROM [appointments] WHERE [appointments.procedure_code7_time] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where procedure_code7_time is in specified values"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_019",
+    "Test Description": "Check BETWEEN operator for numeric field in appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.procedure_code1_amount] FROM [appointments] WHERE [appointments.procedure_code1_amount] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where procedure_code1_amount is between 100 and 1000"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_020",
+    "Test Description": "Check BETWEEN operator for date field in appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.procedure_code5_time] FROM [appointments] WHERE [appointments.procedure_code5_time] BETWEEN '2024-01-01' AND '2024-12-31'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where procedure_code5_time is in 2024"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_021",
+    "Test Description": "Check ORDER BY for appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.multiple_statuses], [appointments.performed] FROM [appointments] ORDER BY [appointments.length] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by length in ascending order"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_022",
+    "Test Description": "Check DISTINCT for appointments API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [appointments.status] FROM [appointments]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of status"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_023",
+    "Test Description": "Check all fields can be selected from appointments",
+    "Request Body": {
+      "pql": "SELECT * FROM [appointments]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 70 fields from appointments table"
+  },
+  {
+    "Test Case ID": "TC_APPOINTMENTS_024",
+    "Test Description": "Check complex WHERE conditions for appointments API",
+    "Request Body": {
+      "pql": "SELECT [appointments.procedure_code4], [appointments.procedure_code7] FROM [appointments] WHERE [appointments.procedure_code4] IS NOT NULL AND [appointments.procedure_code7] IS NOT NULL",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on procedure_code4 and procedure_code7"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_025",
+    "Test Description": "Check basic SELECT query for claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.primary_claim_id], [claims.is_partially_paid], [claims.rendering_provider] FROM [claims]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from claims"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_026",
+    "Test Description": "Check WHERE clause with condition for claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.primary_claim_id] FROM [claims] WHERE [claims.primary_claim_id] IS NOT NULL",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where primary_claim_id meets the condition"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_027",
+    "Test Description": "Check MIN aggregate function for claims API",
+    "Request Body": {
+      "pql": "SELECT MIN([claims.total_billed_amount]) FROM [claims]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MIN of total_billed_amount"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_028",
+    "Test Description": "Check AVG aggregate function for claims API",
+    "Request Body": {
+      "pql": "SELECT AVG([claims.total_billed_amount]) FROM [claims]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return AVG of total_billed_amount"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_029",
+    "Test Description": "Check LIKE operator for claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.sent_claim_status] FROM [claims] WHERE [claims.sent_claim_status] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where sent_claim_status contains 'example'"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_030",
+    "Test Description": "Check IN operator for claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.payment_amount] FROM [claims] WHERE [claims.payment_amount] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where payment_amount is in specified values"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_031",
+    "Test Description": "Check BETWEEN operator for numeric field in claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.payment_amount] FROM [claims] WHERE [claims.payment_amount] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where payment_amount is between 100 and 1000"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_032",
+    "Test Description": "Check BETWEEN operator for date field in claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.on_hold_date] FROM [claims] WHERE [claims.on_hold_date] BETWEEN '2024-01-01' AND '2024-12-31'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where on_hold_date is in 2024"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_033",
+    "Test Description": "Check ORDER BY for claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.claim_tag], [claims.tp] FROM [claims] ORDER BY [claims.cust_id] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by cust_id in ascending order"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_034",
+    "Test Description": "Check DISTINCT for claims API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [claims.claim_channel] FROM [claims]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of claim_channel"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_035",
+    "Test Description": "Check all fields can be selected from claims",
+    "Request Body": {
+      "pql": "SELECT * FROM [claims]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 40 fields from claims table"
+  },
+  {
+    "Test Case ID": "TC_CLAIMS_036",
+    "Test Description": "Check complex WHERE conditions for claims API",
+    "Request Body": {
+      "pql": "SELECT [claims.guarantor_id], [claims.claim_status_2] FROM [claims] WHERE [claims.guarantor_id] IS NOT NULL AND [claims.claim_status_2] = 'Active'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on guarantor_id and claim_status_2"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_037",
+    "Test Description": "Check basic SELECT query for transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.transaction_entry_date], [transactions.invoice_status], [transactions.last_updated_by] FROM [transactions]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from transactions"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_038",
+    "Test Description": "Check WHERE clause with condition for transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.surface_quadrant_type] FROM [transactions] WHERE [transactions.surface_quadrant_type] = 'Active'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where surface_quadrant_type meets the condition"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_039",
+    "Test Description": "Check AVG aggregate function for transactions API",
+    "Request Body": {
+      "pql": "SELECT AVG([transactions.quantity]) FROM [transactions]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return AVG of quantity"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_040",
+    "Test Description": "Check SUM aggregate function for transactions API",
+    "Request Body": {
+      "pql": "SELECT SUM([transactions.quantity]) FROM [transactions]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return SUM of quantity"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_041",
+    "Test Description": "Check LIKE operator for transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.note] FROM [transactions] WHERE [transactions.note] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where note contains 'example'"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_042",
+    "Test Description": "Check IN operator for transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.invoice_number] FROM [transactions] WHERE [transactions.invoice_number] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where invoice_number is in specified values"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_043",
+    "Test Description": "Check BETWEEN operator for numeric field in transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.amount] FROM [transactions] WHERE [transactions.amount] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where amount is between 100 and 1000"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_044",
+    "Test Description": "Check BETWEEN operator for date field in transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.original_prosthesis_date] FROM [transactions] WHERE [transactions.original_prosthesis_date] BETWEEN '2024-01-01' AND '2024-12-31'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where original_prosthesis_date is in 2024"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_045",
+    "Test Description": "Check ORDER BY for transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.transaction_time], [transactions.appointment_sr_no] FROM [transactions] ORDER BY [transactions.pre_authorization_id] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by pre_authorization_id in ascending order"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_046",
+    "Test Description": "Check DISTINCT for transactions API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [transactions.amount] FROM [transactions]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of amount"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_047",
+    "Test Description": "Check all fields can be selected from transactions",
+    "Request Body": {
+      "pql": "SELECT * FROM [transactions]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 57 fields from transactions table"
+  },
+  {
+    "Test Case ID": "TC_TRANSACTIONS_048",
+    "Test Description": "Check complex WHERE conditions for transactions API",
+    "Request Body": {
+      "pql": "SELECT [transactions.transaction_date], [transactions.surface_quadrant_type] FROM [transactions] WHERE [transactions.transaction_date] > '2024-01-01' AND [transactions.surface_quadrant_type] = 'Active'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on transaction_date and surface_quadrant_type"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_049",
+    "Test Description": "Check basic SELECT query for providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.drug_id], [providers.external_id], [providers.federal_id_no] FROM [providers]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return 3 selected fields from providers"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_050",
+    "Test Description": "Check WHERE clause with condition for providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.provider_type] FROM [providers] WHERE [providers.provider_type] = 'Active'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where provider_type meets the condition"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_051",
+    "Test Description": "Check MAX aggregate function for providers API",
+    "Request Body": {
+      "pql": "SELECT MAX([providers.provider_account_id]) FROM [providers]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MAX of provider_account_id"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_052",
+    "Test Description": "Check MIN aggregate function for providers API",
+    "Request Body": {
+      "pql": "SELECT MIN([providers.provider_account_id]) FROM [providers]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return MIN of provider_account_id"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_053",
+    "Test Description": "Check LIKE operator for providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.lastname] FROM [providers] WHERE [providers.lastname] LIKE '%example%'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where lastname contains 'example'"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_054",
+    "Test Description": "Check IN operator for providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.federal_id_sub_no] FROM [providers] WHERE [providers.federal_id_sub_no] IN (1, 2, 3)",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where federal_id_sub_no is in specified values"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_055",
+    "Test Description": "Check BETWEEN operator for numeric field in providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.tax_identification_number] FROM [providers] WHERE [providers.tax_identification_number] BETWEEN 100 AND 1000",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where tax_identification_number is between 100 and 1000"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_056",
+    "Test Description": "Check BETWEEN operator for date field in providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.hire_date] FROM [providers] WHERE [providers.hire_date] BETWEEN '2024-01-01' AND '2024-12-31'",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records where hire_date is in 2024"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_057",
+    "Test Description": "Check ORDER BY for providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.is_user], [providers.birthdate] FROM [providers] ORDER BY [providers.state_id] ASC",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records ordered by state_id in ascending order"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_058",
+    "Test Description": "Check DISTINCT for providers API",
+    "Request Body": {
+      "pql": "SELECT DISTINCT [providers.federal_id_sub_no] FROM [providers]",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return unique values of federal_id_sub_no"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_059",
+    "Test Description": "Check all fields can be selected from providers",
+    "Request Body": {
+      "pql": "SELECT * FROM [providers]",
+      "limit": "10",
+      "offset": "0"
+    },
+    "Expected Results": "Should return all 39 fields from providers table"
+  },
+  {
+    "Test Case ID": "TC_PROVIDERS_060",
+    "Test Description": "Check complex WHERE conditions for providers API",
+    "Request Body": {
+      "pql": "SELECT [providers.zipcode], [providers.bluecross_id] FROM [providers] WHERE [providers.zipcode] IS NOT NULL AND [providers.bluecross_id] IS NOT NULL",
+      "limit": "50",
+      "offset": "0"
+    },
+    "Expected Results": "Should return records meeting both conditions on zipcode and bluecross_id"
+  }
+]
