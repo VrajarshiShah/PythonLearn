@@ -131,6 +131,19 @@ st.markdown("""
         border-radius: 4px;
         font-size: 0.85rem;
     }
+    .fields-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+    .field-item {
+        background-color: #edf2f7;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-family: 'Courier New', monospace;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -194,6 +207,19 @@ def get_api_info(api_name: str) -> Dict[str, Any]:
             return api
     return {}
 
+def display_api_fields(api_name: str, fields: List[str]):
+    """Display API fields in a nice grid layout"""
+    st.markdown(f"**Available {api_name} Fields:**")
+    
+    # Create a grid of fields
+    cols = st.columns(4)
+    col_index = 0
+    
+    for i, field in enumerate(fields):
+        with cols[col_index]:
+            st.markdown(f'<div class="field-item">{field}</div>', unsafe_allow_html=True)
+        col_index = (col_index + 1) % 4
+
 def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
     """Generate comprehensive test queries using specific API fields from JSON schema"""
     api_info = get_api_info(api_name)
@@ -206,67 +232,67 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
     
     test_queries = []
     
-    # Display API field information
+    # Store API fields in session state for display
     st.session_state.current_api_fields = fields
     st.session_state.current_api_name = api_name
+    
+    # Display all available fields for this API
+    with st.expander(f"📋 All Available {api_name} Fields ({len(fields)} fields)", expanded=False):
+        display_api_fields(api_name, fields)
     
     # 1. Basic SELECT with all API-specific fields
     field_list = ", ".join([f"[{api_name}.{field}]" for field in fields])
     test_queries.append({
         "name": f"Basic SELECT - All {api_name} Fields",
         "query": f"SELECT {field_list} FROM [{api_name}]",
-        "description": f"Select all {api_name} fields: {', '.join(fields)}",
+        "description": f"Select all {api_name} fields",
         "type": "SELECT_BASIC",
-        "fields_used": fields
+        "fields_used": fields,
+        "all_fields": True
     })
     
-    # 2. SELECT with specific fields (first 3 fields)
-    if len(fields) >= 3:
-        selected_fields = fields[:3]
+    # 2. SELECT with specific fields (first 5 fields for better coverage)
+    if len(fields) >= 5:
+        selected_fields = fields[:5]
         field_list = ", ".join([f"[{api_name}.{field}]" for field in selected_fields])
         test_queries.append({
             "name": f"SELECT {api_name} Core Fields",
             "query": f"SELECT {field_list} FROM [{api_name}]",
-            "description": f"Select core {api_name} fields: {', '.join(selected_fields)}",
+            "description": f"Select core {api_name} fields",
             "type": "SELECT_SPECIFIC",
             "fields_used": selected_fields
         })
     
-    # 3. EXISTS operator with practice_id or similar ID field
-    id_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['id', 'practice', 'patient', 'cust'])]
-    if id_fields and api_name != 'appointments':
-        id_field = id_fields[0]
-        test_queries.append({
-            "name": "EXISTS Operator",
-            "query": f"SELECT [{api_name}.{id_field}] FROM [{api_name}] WHERE EXISTS (SELECT 1 FROM [appointments] WHERE [appointments.practice_id] = [{api_name}.{id_field}])",
-            "description": f"Check EXISTS operator using {id_field} field",
-            "type": "EXISTS",
-            "fields_used": [id_field]
-        })
-    
-    # 4. COUNT with EXISTS
-    if id_fields:
-        id_field = id_fields[0]
-        test_queries.append({
-            "name": "COUNT with EXISTS",
-            "query": f"SELECT COUNT([{api_name}.{id_field}]) FROM [{api_name}] WHERE EXISTS (SELECT 1 FROM [appointments] WHERE [appointments.practice_id] = [{api_name}.{id_field}])",
-            "description": f"Count records with EXISTS condition using {id_field}",
-            "type": "COUNT_EXISTS",
-            "fields_used": [id_field]
-        })
-    
-    # 5. COUNT all records
+    # 3. COUNT all records using first available field
     if fields:
+        count_field = fields[0]
         test_queries.append({
             "name": f"COUNT {api_name} Records",
-            "query": f"SELECT COUNT([{api_name}.{fields[0]}]) FROM [{api_name}]",
+            "query": f"SELECT COUNT([{api_name}.{count_field}]) FROM [{api_name}]",
             "description": f"Count total records in {api_name}",
             "type": "COUNT",
-            "fields_used": [fields[0]]
+            "fields_used": [count_field]
         })
     
-    # 6. MAX and MIN functions
-    numeric_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['id', 'amount', 'number', 'count', 'total', 'balance', 'quantity'])]
+    # 4. EXISTS operator with ID fields
+    id_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['id', 'practice', 'patient', 'cust'])]
+    if id_fields:
+        id_field = id_fields[0]
+        # Find a compatible table for EXISTS
+        compatible_tables = ['patients', 'appointments', 'claims', 'transactions', 'providers']
+        for table in compatible_tables:
+            if table != api_name and get_api_fields(table):
+                test_queries.append({
+                    "name": "EXISTS Operator",
+                    "query": f"SELECT [{api_name}.{id_field}] FROM [{api_name}] WHERE EXISTS (SELECT 1 FROM [{table}] WHERE [{table}.practice_id] = [{api_name}.{id_field}])",
+                    "description": f"Check EXISTS operator using {id_field} field with {table} table",
+                    "type": "EXISTS",
+                    "fields_used": [id_field]
+                })
+                break
+    
+    # 5. MAX and MIN functions with numeric fields
+    numeric_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['id', 'amount', 'number', 'count', 'total', 'balance', 'quantity', 'time', 'length'])]
     if numeric_fields:
         field = numeric_fields[0]
         test_queries.append({
@@ -277,7 +303,7 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field]
         })
     
-    # 7. AVG function
+    # 6. AVG function with numeric fields
     if numeric_fields:
         field = numeric_fields[0]
         test_queries.append({
@@ -288,8 +314,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field]
         })
     
-    # 8. LIKE operator
-    string_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['name', 'description', 'note', 'comment', 'title', 'label'])]
+    # 7. LIKE operator with string fields
+    string_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['name', 'description', 'note', 'comment', 'title', 'label', 'status', 'type'])]
     if string_fields:
         field = string_fields[0]
         test_queries.append({
@@ -300,7 +326,7 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field]
         })
     
-    # 9. IN operator
+    # 8. IN operator with ID fields
     if id_fields:
         field = id_fields[0]
         test_queries.append({
@@ -311,7 +337,7 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field]
         })
     
-    # 10. BETWEEN operator
+    # 9. BETWEEN operator with numeric/date fields
     if numeric_fields:
         field = numeric_fields[0]
         test_queries.append({
@@ -322,7 +348,7 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field]
         })
     
-    # 11. ORDER BY
+    # 10. ORDER BY with first field
     if len(fields) >= 2:
         order_field = fields[0]
         display_fields = fields[:2]
@@ -335,7 +361,7 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": display_fields
         })
     
-    # 12. DISTINCT
+    # 11. DISTINCT with first field
     if fields:
         field = fields[0]
         test_queries.append({
@@ -346,19 +372,8 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field]
         })
     
-    # 13. HAVING clause
-    if numeric_fields and len(numeric_fields) >= 2:
-        field1, field2 = numeric_fields[:2]
-        test_queries.append({
-            "name": "HAVING Clause",
-            "query": f"SELECT SUM([{api_name}.{field1}]) FROM [{api_name}] HAVING COUNT([{api_name}.{field2}]) < 100",
-            "description": f"Use HAVING clause with SUM({field1}) and COUNT({field2})",
-            "type": "HAVING",
-            "fields_used": [field1, field2]
-        })
-    
-    # 14. Complex WHERE with multiple conditions
-    where_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['id', 'status', 'date', 'type'])]
+    # 12. WHERE with multiple conditions
+    where_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['id', 'status', 'date', 'type', 'name'])]
     if len(where_fields) >= 2:
         field1, field2 = where_fields[:2]
         test_queries.append({
@@ -369,37 +384,59 @@ def generate_api_specific_queries(api_name: str) -> List[Dict[str, Any]]:
             "fields_used": [field1, field2]
         })
     
-    # 15. All fields selection (wildcard)
+    # 13. All fields selection (wildcard)
     test_queries.append({
         "name": f"All {api_name} Fields (Wildcard)",
         "query": f"SELECT * FROM [{api_name}]",
         "description": f"Select all {api_name} fields using wildcard",
         "type": "SELECT_ALL",
-        "fields_used": fields
+        "fields_used": fields,
+        "all_fields": True
     })
     
-    # 16. JOIN queries with related tables
-    if any('id' in field.lower() for field in fields):
-        common_fields = [f for f in fields if any(keyword in f.lower() for keyword in ['patient', 'practice', 'cust', 'provider', 'guarantor'])]
-        if common_fields:
-            join_field = common_fields[0]
-            # Find compatible tables for JOIN
-            join_tables = ['patients', 'appointments', 'claims', 'transactions', 'providers', 'guarantors']
-            for join_table in join_tables:
+    # 14. JOIN queries with related tables
+    if id_fields:
+        join_field = id_fields[0]
+        # Find compatible tables for JOIN
+        join_tables = ['patients', 'appointments', 'claims', 'transactions', 'providers', 'guarantors']
+        for join_table in join_tables:
+            if join_table != api_name:
                 join_fields = get_api_fields(join_table)
-                if join_fields and any(join_field.split('_')[-1] in f.lower() for f in join_fields):
-                    # Find matching field in join table
-                    matching_fields = [f for f in join_fields if join_field.split('_')[-1] in f.lower()]
-                    if matching_fields:
-                        join_match_field = matching_fields[0]
-                        test_queries.append({
-                            "name": f"LEFT JOIN with {join_table}",
-                            "query": f"SELECT [{api_name}.{fields[0]}], [{join_table}.{join_fields[0]}] FROM [{api_name}] LEFT JOIN [{join_table}] ON [{api_name}.{join_field}] = [{join_table}.{join_match_field}]",
-                            "description": f"LEFT JOIN with {join_table} using {join_field}",
-                            "type": "LEFT_JOIN",
-                            "fields_used": [fields[0], join_field]
-                        })
-                        break
+                if join_fields:
+                    # Use first field from join table for display
+                    join_display_field = join_fields[0]
+                    test_queries.append({
+                        "name": f"LEFT JOIN with {join_table}",
+                        "query": f"SELECT [{api_name}.{fields[0]}], [{join_table}.{join_display_field}] FROM [{api_name}] LEFT JOIN [{join_table}] ON [{api_name}.{join_field}] = [{join_table}.practice_id]",
+                        "description": f"LEFT JOIN with {join_table} using {join_field}",
+                        "type": "LEFT_JOIN",
+                        "fields_used": [fields[0], join_field]
+                    })
+                    break
+    
+    # 15. Date range queries (if date fields exist)
+    date_fields = [f for f in fields if 'date' in f.lower()]
+    if date_fields:
+        date_field = date_fields[0]
+        test_queries.append({
+            "name": "Date Range Query",
+            "query": f"SELECT [{api_name}.{date_field}] FROM [{api_name}] WHERE [{api_name}.{date_field}] >= '2023-01-01'",
+            "description": f"Filter by date range using {date_field}",
+            "type": "DATE_RANGE",
+            "fields_used": [date_field]
+        })
+    
+    # 16. GROUP BY with aggregate functions
+    if len(fields) >= 2:
+        group_field = fields[0]
+        agg_field = fields[1] if len(fields) > 1 else fields[0]
+        test_queries.append({
+            "name": "GROUP BY with COUNT",
+            "query": f"SELECT [{api_name}.{group_field}], COUNT([{api_name}.{agg_field}]) FROM [{api_name}] GROUP BY [{api_name}.{group_field}]",
+            "description": f"Group by {group_field} with count of {agg_field}",
+            "type": "GROUP_BY",
+            "fields_used": [group_field, agg_field]
+        })
     
     return test_queries
 
@@ -545,7 +582,10 @@ def show_query_execution_modal(query_info: Dict[str, Any], tester: PQLTester, qu
     # Show fields used in this query
     if "fields_used" in query_info:
         st.markdown('<div class="field-info">', unsafe_allow_html=True)
-        st.markdown(f"**Fields used in this query:** `{', '.join(query_info['fields_used'])}`")
+        if query_info.get("all_fields", False):
+            st.markdown(f"**All {len(query_info['fields_used'])} fields from {st.session_state.current_api_name} are used in this query**")
+        else:
+            st.markdown(f"**Fields used in this query:** `{', '.join(query_info['fields_used'])}`")
         st.markdown('</div>', unsafe_allow_html=True)
     
     # Display the original query
@@ -633,8 +673,12 @@ def main():
         # Show API field information
         api_info = get_api_info(selected_api)
         if api_info:
-            st.markdown(f"**{selected_api} Fields:**")
-            st.code(", ".join(api_info['api_fields']))
+            st.markdown(f"**{selected_api} API Fields Preview:**")
+            fields_preview = api_info['api_fields'][:8]  # Show first 8 fields
+            for field in fields_preview:
+                st.code(field, language=None)
+            if len(api_info['api_fields']) > 8:
+                st.info(f"... and {len(api_info['api_fields']) - 8} more fields")
         
         query_limit = st.slider(
             "Results Limit",
@@ -660,7 +704,7 @@ def main():
             # Show API-specific information
             current_fields = st.session_state.get('current_api_fields', [])
             st.markdown('<div class="info-box">', unsafe_allow_html=True)
-            st.info(f"🎯 **{selected_api} API Specific Queries** - Using fields: {', '.join(current_fields)}")
+            st.info(f"🎯 **{selected_api} API Specific Queries** - Total {len(current_fields)} fields available")
             st.markdown('</div>', unsafe_allow_html=True)
             
             query_types = {}
@@ -678,8 +722,12 @@ def main():
                         
                         # Show fields used in this specific query
                         if "fields_used" in query_info:
-                            st.markdown(f"<div class='field-info'>Fields: `{', '.join(query_info['fields_used'])}`</div>", 
-                                      unsafe_allow_html=True)
+                            if query_info.get("all_fields", False):
+                                st.markdown(f"<div class='field-info'>Uses all {len(query_info['fields_used'])} {selected_api} fields</div>", 
+                                          unsafe_allow_html=True)
+                            else:
+                                st.markdown(f"<div class='field-info'>Fields: `{', '.join(query_info['fields_used'])}`</div>", 
+                                          unsafe_allow_html=True)
                         
                         st.code(query_info['query'], language="sql")
                         
@@ -715,7 +763,10 @@ def main():
                 
                 # Show fields used
                 if "fields_used" in query_info:
-                    st.markdown(f"**Fields Used:** `{', '.join(query_info['fields_used'])}`")
+                    if query_info.get("all_fields", False):
+                        st.markdown(f"**Fields Used:** All {len(query_info['fields_used'])} {st.session_state.current_api_name} fields")
+                    else:
+                        st.markdown(f"**Fields Used:** `{', '.join(query_info['fields_used'])}`")
                 
                 st.markdown("**PQL Query:**")
                 st.code(query_info['query'], language="sql")
@@ -733,10 +784,11 @@ def main():
             st.markdown('<div class="info-box">', unsafe_allow_html=True)
             st.info("👆 Select a query and configure the request body to execute it")
             st.markdown("""
-            **New Features:**
+            **Features:**
             - ✅ **API Field Visibility**: See exactly which fields are used in each query
             - ✅ **Request Body Editing**: Modify PQL, limit, and offset before execution
             - ✅ **Real-time Configuration**: Customize your API calls
+            - ✅ **Complete Field Coverage**: All test queries use actual API fields
             """)
             st.markdown('</div>', unsafe_allow_html=True)
         
